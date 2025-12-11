@@ -20,6 +20,8 @@ def save_json(data, filename):
     with open(filename, "w") as f:
         json.dump(data, f, indent=4)
 
+    print(f"\nSaved data to {filename}\n")
+
 
 def load_json(filename):
     """
@@ -37,6 +39,7 @@ def save_txt(data, filename):
 
     with open(filename, "w") as f:
         f.write(data)
+    print(f"\nSaved data to {filename}\n")
 
 
 def load_txt(filename):

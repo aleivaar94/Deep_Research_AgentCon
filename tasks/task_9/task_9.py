@@ -24,12 +24,14 @@ def task_9():
     if not query_path.exists():
         raise FileNotFoundError("Ground truth query not found; run Task 4 first.")
 
+    # load the user query from the Task 4 ground truth
     with open(query_path) as query_file:
         query_record = json.load(query_file)
     query_text = query_record.get("user_query", "").strip()
     if not query_text:
         raise ValueError("Task 4 query file does not contain a user_query.")
 
+    # read the chunk metadata and precomputed embeddings from Task 8
     with open(chunks_path) as chunk_file:
         chunk_records = json.load(chunk_file)
     with open(embeddings_path, "rb") as emb_file:
@@ -38,9 +40,11 @@ def task_9():
     if not chunk_records or not embeddings or len(chunk_records) != len(embeddings):
         raise ValueError("Mismatch between chunk metadata and embeddings.")
 
+    # embed the query with the same model used for chunks
     model = SentenceTransformer("all-MiniLM-L6-v2")
     query_embedding = model.encode(query_text, convert_to_numpy=True).tolist()
 
+    # compute cosine similarity between two vectors
     def cosine_similarity(a, b):
         dot = sum(x * y for x, y in zip(a, b))
         norm_a = math.sqrt(sum(x * x for x in a))
@@ -54,6 +58,7 @@ def task_9():
         score = cosine_similarity(chunk_vector, query_embedding)
         scored_chunks.append({"score": score, "chunk": chunk_meta})
 
+    # sort to expose best/worst matches
     scored_chunks.sort(key=lambda item: item["score"], reverse=True)
     closest = scored_chunks[:3]
     furthest = scored_chunks[-3:][::-1]

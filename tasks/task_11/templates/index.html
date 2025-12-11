@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Deep Research Agent</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", sans-serif;
+        background: linear-gradient(180deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .search-card {
+        background: white;
+        border-radius: 24px;
+        padding: 40px;
+        width: min(640px, 90vw);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+        text-align: center;
+      }
+
+      .search-card h1 {
+        margin: 0;
+        font-size: 28px;
+      }
+
+      .search-card form {
+        margin-top: 20px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      input[type="text"] {
+        flex: 1;
+        min-width: 220px;
+        padding: 14px 18px;
+        border-radius: 999px;
+        border: 1px solid #dfe3e9;
+        font-size: 16px;
+        box-sizing: border-box;
+      }
+
+      button {
+        padding: 12px 30px;
+        border-radius: 999px;
+        border: none;
+        background: #4285f4;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .results {
+        margin-top: 30px;
+        text-align: left;
+        display: none;
+      }
+
+      .section {
+        margin-bottom: 24px;
+      }
+
+      .section h3 {
+        margin-bottom: 8px;
+        color: #222;
+      }
+
+      .chunk-card,
+      .insight-card {
+        padding: 14px 16px;
+        background: #f8f9ff;
+        border-radius: 16px;
+        margin-bottom: 12px;
+        border: 1px solid #dfe3e9;
+      }
+
+      .insight-card small {
+        color: #555;
+      }
+
+      .citation {
+        font-style: italic;
+        color: #1a73e8;
+      }
+
+      .error {
+        color: #c62828;
+      }
+
+      .example {
+        margin-top: 12px;
+        font-size: 14px;
+        color: #555;
+      }
+
+      .chunk-meta {
+        font-size: 13px;
+        color: #1f1f1f;
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+
+      .chunk-text {
+        line-height: 1.4;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="search-card">
+      <h1>Deep Research Agent</h1>
+      <p>Ask about the holiday sales report and review retrieved chunks before the answer.</p>
+      <form id="query-form">
+        <input id="query-input" type="text" placeholder="What product type leads Christmas profits?" />
+        <button type="submit">Search</button>
+      </form>
+      <p class="example">Example question: “Which product type delivers the highest profit-per-customer during Christmas sales?”</p>
+      <p class="example">Searching over: <strong>outputs/task_7_file_1.txt, outputs/task_7_file_2.txt, outputs/task_7_file_3.txt</strong></p>
+      <div class="results">
+        <div id="chunk-section" class="section">
+          <h3>Top 3 Chunks</h3>
+          <div id="chunks"></div>
+        </div>
+        <div id="insight-section" class="section">
+          <h3>Insights</h3>
+          <div id="insights"></div>
+        </div>
+      </div>
+      <div id="message"></div>
+    </div>
+    <script>
+      const form = document.getElementById("query-form");
+      const chunksContainer = document.getElementById("chunks");
+      const insightsContainer = document.getElementById("insights");
+      const messageEl = document.getElementById("message");
+      const resultsContainer = document.querySelector(".results");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        messageEl.textContent = "";
+        const query = document.getElementById("query-input").value.trim();
+        if (!query) {
+          messageEl.textContent = "Please enter a query.";
+          messageEl.className = "error";
+          return;
+        }
+
+        resultsContainer.style.display = "none";
+        messageEl.textContent = "Searching...";
+        messageEl.className = "";
+        try {
+          const response = await fetch("/query", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query }),
+          });
+
+          const payload = await response.json();
+          if (!response.ok) {
+            throw new Error(payload.error || "Unknown error");
+          }
+
+          chunksContainer.innerHTML = (payload.retrieved_chunks || [])
+            .map(
+              (chunk) =>
+                `<div class="chunk-card">
+                  <div class="chunk-meta">${chunk.chunk_id} · ${chunk.source_file}</div>
+                  <p class="chunk-text">${truncate(chunk.text, 280)}</p>
+                </div>`
+            )
+            .join("");
+
+          insightsContainer.innerHTML = (payload.insights || [])
+            .map(
+              (insight, index) =>
+                `<div class="insight-card">
+                  <strong>Insight ${index + 1}</strong>
+                  <p>${insight.insight}</p>
+                  <small>${insight.justification}</small><br />
+                  <span class="citation">${insight.citation}</span>
+                </div>`
+            )
+            .join("");
+
+          messageEl.textContent = "";
+          resultsContainer.style.display = "block";
+        } catch (error) {
+          messageEl.textContent = error.message;
+          messageEl.className = "error";
+          resultsContainer.style.display = "none";
+        }
+      });
+
+      function truncate(value, maxLength) {
+        if (!value) return "";
+        if (value.length <= maxLength) return value;
+        return value.slice(0, maxLength).trim().replace(/\s+$/, "") + "…";
+      }
+    </script>
+  </body>
+</html>
+

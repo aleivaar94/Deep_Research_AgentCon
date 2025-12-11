@@ -4,13 +4,14 @@ import helpers
 
 def task_3():
     """
-    Provide a paragraph and extract three insights with justifications using a structured prompt.
+    Goal:
+        Provide a paragraph and extract three insights with justifications using a structured prompt.
 
     Instructions:
-    - Load the data from data/christmas.txt
-    - Provide 3 insights about the passage as a list, where each insight includes a justification.
-    - Return the response in JSON format with two keys: 'passage' (containing the text) and 'insights' (a list of objects with 'insight' and 'justification' keys).
-    - Save the structured output nicely (in markdown format) to outputs/task_3.txt.
+        - Load the data from data/christmas.txt
+        - Provide 3 insights about the passage as a list, where each insight includes a justification.
+        - Return the response in JSON format with two keys: 'passage' (containing the text) and 'insights' (a list of objects with 'insight' and 'justification' keys).
+        - Save the structured output nicely (in markdown format) to outputs/task_3.txt.
     """
     # a 3 paragraph passage about how christmas is celebrated around the world
     christmas_passage = helpers.load_txt("data/christmas.txt")

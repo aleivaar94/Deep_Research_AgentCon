@@ -34,7 +34,7 @@ By the end of this workshop, you will have a working Deep Research Agent web app
 * 
 
 ### Task 7: Create Three Needle-in-Haystack files (two of them are distractor files, and one is the target file from task 5)
-
+* 
 
 ### Task 8: Chunk and Embed All Files
 * Chunk the text across all three files  
@@ -47,7 +47,7 @@ By the end of this workshop, you will have a working Deep Research Agent web app
 
 ### Task 10: Augmented Generation Stage Two of RAG
 * Combine retrieved chunks with the user query  
-* Generate an improved answer using the LLM
+* Generate an answer using the LLM with the chunks provided
 
 ### Task 11: Build a Flask Deep Research App with Citations
 * Create a query endpoint  

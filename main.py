@@ -16,7 +16,7 @@ if __name__ == "__main__":
         "--task",
         "-t",
         type=str,
-        default="task_8",
+        default="task_11",
         help="The task to run",
         choices=TASK_LIST,
     )

@@ -4,12 +4,11 @@ import helpers
 
 def task_2():
     """
-    Send an interesting prompt to an LLM and print the model response.
-
+    Goal:
+        Send an interesting prompt to an LLM and print the model response.
     Instructions:
-    - setup .env file with the together api key
-    - Send an interesting prompt to an LLM
-    - Print & save the model response to outputs/task_2.txt
+        - Send an interesting prompt to an LLM
+        - Print & save the model response to outputs/task_2.txt
     """
     prompt = (
         "Generate a cool and short message about how AI is transforming the future."
