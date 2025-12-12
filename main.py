@@ -2,7 +2,7 @@ import argparse
 
 # import tasks
 
-import tasks_sol as tasks
+import tasks
 
 from dotenv import load_dotenv
 
